@@ -15,12 +15,12 @@ model User {
   uuid String
   fname String
   lname String
-  mname String
-  age Int
+  mname String?
+  age Int?
   address String
-  avatar String
+  avatar String?
   email String
-  hash String
+  password String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -46,7 +46,7 @@ model Post {
   uuid String
   title String
   content String
-  reactions String
+  reactions String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
