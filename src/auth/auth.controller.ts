@@ -1,4 +1,11 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Get,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { AuthSignupDto } from './dto';
@@ -14,15 +21,13 @@ export class AuthController {
   }
 
   @Post('signup')
-  async signUp(@Body() signUpDto: AuthSignupDto) {
+  async signUp(@Body() authSignupDto: AuthSignupDto) {
+    if (!authSignupDto) throw new BadRequestException();
+
     return await this.authService
-      .signUp(signUpDto)
-      .then((response) => {
-        console.log(response);
-        return response;
-      })
+      .signUp(authSignupDto)
+      .then((response) => response)
       .catch((e) => {
-        console.log(e);
         throw new Error(e);
       });
   }
