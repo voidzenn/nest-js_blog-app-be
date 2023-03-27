@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaService } from '../prisma/prisma.service';
 import { AuthService } from './auth.service';
-import { AuthSignupDto } from './dto';
+import { AuthSigninDto, AuthSignupDto } from './dto';
 
 describe('AuthService', () => {
   let authService: AuthService;
@@ -46,6 +46,33 @@ describe('AuthService', () => {
           id: expect.any(Number),
           email: expect.any(String),
           createdAt: expect.any(Date),
+        });
+      }
+    });
+  });
+
+  describe('Signin', () => {
+    let authSigninDto: AuthSigninDto;
+
+    it('should throw error 400 or Bad Request', async () => {
+      expect(
+        await authService.signIn(authSigninDto).catch((e) => e),
+      ).toMatchObject({
+        status: 400,
+      });
+    });
+
+    it('should throw error 403 Forbidden if wrong credentials passed', async () => {
+      const authSigninDto: AuthSigninDto = {
+        email: 'user@user.com',
+        password: 'test',
+      };
+
+      if (authService) {
+        expect(
+          await authService.signIn(authSigninDto).catch((e) => e),
+        ).toMatchObject({
+          status: 403,
         });
       }
     });
