@@ -9,23 +9,19 @@ export class AuthService {
   async signUp(authSignupDto: AuthSignupDto) {
     if (!authSignupDto) throw new BadRequestException();
 
-    try {
-      return await this.prisma.user
-        .create({
-          select: {
-            id: true,
-            email: true,
-            createdAt: true,
-            uuid: false,
-          },
-          data: authSignupDto,
-        })
-        .then((response) => response)
-        .catch((e) => {
-          throw new Error(e);
-        });
-    } catch (e) {
-      throw new Error(e);
-    }
+    return await this.prisma.user
+      .create({
+        select: {
+          id: true,
+          email: true,
+          createdAt: true,
+          uuid: false,
+        },
+        data: authSignupDto,
+      })
+      .then((response) => response)
+      .catch((e) => {
+        throw new Error(e);
+      });
   }
 }
