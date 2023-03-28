@@ -3,6 +3,7 @@ import {
   ForbiddenException,
   Injectable,
 } from '@nestjs/common';
+import bcryptify from '../utils/bcryptify';
 import { signinError } from '../constants/errors/auth.errors';
 import { PrismaService } from '../prisma/prisma.service';
 import { AuthSigninDto, AuthSignupDto } from './dto';
@@ -14,13 +15,14 @@ export class AuthService {
   async signUp(authSignupDto: AuthSignupDto) {
     if (!authSignupDto) throw new BadRequestException();
 
+    authSignupDto.password = await bcryptify.hashPass(authSignupDto.password);
+
     return await this.prisma.user
       .create({
         select: {
           id: true,
           email: true,
           createdAt: true,
-          uuid: false,
         },
         data: authSignupDto,
       })
@@ -37,12 +39,24 @@ export class AuthService {
     const user = await this.prisma.user.findFirst({
       where: {
         email: authSiginDto.email,
-        password: authSiginDto.password,
+      },
+      select: {
+        password: true,
       },
     });
-    // If user not found throw error
+    // If email not found throw error
     if (!user) throw new ForbiddenException(signinError.WRONG_EMAIL_PASSWORD);
 
-    return { message: 'success' };
+    return await bcryptify
+      .isMatch(authSiginDto.password, user.password)
+      .then((response) => {
+        if (!response)
+          throw new ForbiddenException(signinError.WRONG_EMAIL_PASSWORD);
+
+        return {
+          statusText: 'Successfullly Signed in',
+          status: 200,
+        };
+      });
   }
 }
