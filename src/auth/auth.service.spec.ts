@@ -1,9 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { uuid, shortUuid } from '../utils/getUuid';
 import { PrismaService } from '../prisma/prisma.service';
 import { AuthService } from './auth.service';
 import { AuthSigninDto, AuthSignupDto } from './dto';
-
-const uniqueTime = Math.floor(Date.now() / 1000).toString();
 
 describe('AuthService', () => {
   let authService: AuthService;
@@ -15,7 +14,7 @@ describe('AuthService', () => {
     }).compile();
 
     authService = module.get<AuthService>(AuthService);
-    randomEmail = `user${uniqueTime}@user.com`;
+    randomEmail = `user@${shortUuid}.com`;
   });
 
   it('should define auth service', () => {
@@ -35,7 +34,7 @@ describe('AuthService', () => {
 
     it('should successfully signup or create user', async () => {
       const authSignupDto: AuthSignupDto = {
-        uuid: uniqueTime,
+        uuid: uuid,
         fname: 'fname',
         lname: 'lname',
         address: 'address',
