@@ -7,6 +7,10 @@ import bcryptify from '../utils/bcryptify';
 import { signinError } from '../constants/errors/auth.errors';
 import { PrismaService } from '../prisma/prisma.service';
 import { AuthSigninDto, AuthSignupDto } from './dto';
+import { responseStatus } from '../constants/responses/response.status';
+import { AuthResponse } from './types/response.types';
+
+const authRespponse: AuthResponse = { status: null, message: null };
 
 @Injectable()
 export class AuthService {
@@ -53,10 +57,10 @@ export class AuthService {
         if (!response)
           throw new ForbiddenException(signinError.WRONG_EMAIL_PASSWORD);
 
-        return {
-          statusText: 'Successfullly Signed in',
-          status: 200,
-        };
+        authRespponse.status = responseStatus.SUCCESS_SIGNIN.status;
+        authRespponse.message = responseStatus.SUCCESS_SIGNIN.message;
+
+        return authRespponse;
       });
   }
 }
