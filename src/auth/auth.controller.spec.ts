@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { shortUuid, uuid } from '../utils/getUuid';
 import { PrismaService } from '../prisma/prisma.service';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
@@ -6,6 +7,7 @@ import { AuthSignupDto } from './dto';
 
 describe('AuthController', () => {
   let controller: AuthController;
+  let randomEmail: string;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -14,6 +16,7 @@ describe('AuthController', () => {
     }).compile();
 
     controller = module.get<AuthController>(AuthController);
+    randomEmail = `user@${shortUuid}.com`;
   });
 
   it('should be defined', () => {
@@ -33,12 +36,12 @@ describe('AuthController', () => {
 
     it('should successfully signup or create user', async () => {
       const authSignupDto: AuthSignupDto = {
-        uuid: 'id',
+        uuid: uuid,
         fname: 'fname',
         lname: 'lname',
         address: 'address',
-        email: '',
-        password: '',
+        email: randomEmail,
+        password: 'test',
       };
 
       if (authSignupDto) {

@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
-import { AuthSignupDto } from './dto';
+import { AuthSigninDto, AuthSignupDto } from './dto';
 
 @Controller('auth')
 export class AuthController {
@@ -33,9 +33,14 @@ export class AuthController {
   }
 
   @Post('signin')
-  async signIn() {
-    // async signUp() {
-    //   return await this.auth0Controller.getAccessToken({});
-    // }
+  async signIn(@Body() authSigninDto: AuthSigninDto) {
+    if (authSigninDto) throw new BadRequestException();
+
+    return await this.authService
+      .signIn(authSigninDto)
+      .then((response) => response)
+      .catch((e) => {
+        throw new Error(e);
+      });
   }
 }
