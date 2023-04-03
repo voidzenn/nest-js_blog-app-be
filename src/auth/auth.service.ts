@@ -10,14 +10,14 @@ import { AuthSigninDto, AuthSignupDto } from './dto';
 import { responseStatus } from '../constants/responses/response.status';
 import { AuthResponse } from './types/response.types';
 
-const authRespponse: AuthResponse = { status: null, message: null };
+const authRespponse: AuthResponse = { status: null, message: null, data: {} };
 
 @Injectable()
 export class AuthService {
   constructor(private prisma: PrismaService) {}
 
   async signUp(authSignupDto: AuthSignupDto) {
-    if (!authSignupDto) throw new BadRequestException();
+    if (!authSignupDto) throw new BadRequestException({ message: 'lols' });
 
     authSignupDto.password = await bcryptify.hashPass(authSignupDto.password);
 

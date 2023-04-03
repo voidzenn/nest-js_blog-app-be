@@ -7,12 +7,16 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { Auth0Controller } from '../auth0/auth0.controller';
 import { AuthService } from './auth.service';
 import { AuthSigninDto, AuthSignupDto } from './dto';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private auth0Controller: Auth0Controller,
+  ) {}
 
   @Get()
   @UseGuards(AuthGuard('jwt'))
@@ -34,13 +38,26 @@ export class AuthController {
 
   @Post('signin')
   async signIn(@Body() authSigninDto: AuthSigninDto) {
-    if (authSigninDto) throw new BadRequestException();
+    if (!authSigninDto) throw new BadRequestException();
 
     return await this.authService
       .signIn(authSigninDto)
-      .then((response) => response)
+      .then(async (response) => {
+        const data = await this.getAuth0Data();
+        if (data) {
+          response.data = data;
+          return response;
+        }
+      })
       .catch((e) => {
-        throw new Error(e);
+        throw e;
       });
+  }
+
+  private async getAuth0Data() {
+    return await this.auth0Controller
+      .getAccessToken({})
+      .then((response) => response)
+      .catch((e) => e);
   }
 }
