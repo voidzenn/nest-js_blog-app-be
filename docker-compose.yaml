@@ -5,9 +5,20 @@ services:
     ports:
       - 5434:5432
     environment:
-      POSTGRES_USER: root
+      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: test
       POSTGRES_DB: blog_app
-volumes:
-  db:
-    driver: local
+    networks:
+      - nestapp
+  test-db:
+    image: postgres:13
+    ports:
+      - 5435:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: test
+      POSTGRES_DB: blog_app
+    networks:
+      - nestapp
+networks:
+  nestapp:

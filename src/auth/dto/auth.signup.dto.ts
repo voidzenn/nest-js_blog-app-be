@@ -21,11 +21,11 @@ export class AuthSignupDto {
 
   @IsOptional()
   @IsString()
-  mname: string;
+  mname?: string;
 
   @IsOptional()
   @IsNumber()
-  age: number;
+  age?: number;
 
   @IsNotEmpty()
   @IsString()
@@ -33,7 +33,7 @@ export class AuthSignupDto {
 
   @IsOptional()
   @IsString()
-  avatar: string;
+  avatar?: string;
 
   @IsNotEmpty()
   @IsString()

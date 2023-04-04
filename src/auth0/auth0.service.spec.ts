@@ -1,7 +1,5 @@
 import { HttpModule } from '@nestjs/axios';
-import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { NotFoundError } from 'rxjs';
 import config from '../config';
 import { Auth0Service } from './auth0.service';
 

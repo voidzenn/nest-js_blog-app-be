@@ -21,13 +21,11 @@ export class Auth0Controller {
             } as ResponseTypes;
           }
         } catch (e) {
-          // console.log(e);
           throw new Error(e);
         }
       })
       .catch((e) => {
         responseData = null;
-        // console.log(e);
         throw new Error(e);
       });
 
