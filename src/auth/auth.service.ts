@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { Auth0Service } from '../auth0/auth0.service';
+import { AuthController } from './auth.controller';
 
 @Injectable()
 export class AuthService {
-  constructor(private auth0Service: Auth0Service) {}
+  constructor(private auth0Controller: AuthController) {}
 
-  async signUp() {
-    const req = await this.auth0Service.getAcessToken();
-    console.log(req);
-    return { data: req };
-  }
+  // async signUp() {
+  //   const req = await this.auth0Controller.signUp();
+  //   console.log(req);
+  //   return { data: req };
+  // }
 }

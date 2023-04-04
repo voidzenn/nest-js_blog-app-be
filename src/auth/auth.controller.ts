@@ -1,10 +1,10 @@
 import { Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { AuthService } from './auth.service';
+import { Auth0Controller } from 'src/auth0/auth0.controller';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private auth0Controller: Auth0Controller) {}
 
   @Get()
   @UseGuards(AuthGuard('jwt'))
@@ -14,6 +14,6 @@ export class AuthController {
 
   @Post('signup')
   async signUp() {
-    return await this.authService.signUp();
+    return await this.auth0Controller.getAccessToken({});
   }
 }
