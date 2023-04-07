@@ -46,7 +46,6 @@ describe('AuthService', () => {
         expect(
           await authService.signUp(authSignupDto).then((response) => response),
         ).toEqual({
-          id: expect.any(Number),
           email: expect.any(String),
           createdAt: expect.any(Date),
         });

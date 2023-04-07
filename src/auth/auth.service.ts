@@ -24,7 +24,6 @@ export class AuthService {
     return await this.prisma.user
       .create({
         select: {
-          id: true,
           email: true,
           createdAt: true,
         },

@@ -53,7 +53,6 @@ describe('AuthController', () => {
         expect(
           await controller.signUp(authSignupDto).then((response) => response),
         ).toEqual({
-          id: expect.any(Number),
           email: expect.any(String),
           createdAt: expect.any(Date),
         });
