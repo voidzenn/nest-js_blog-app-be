@@ -30,9 +30,8 @@ describe('UsersController', () => {
     await app.init();
     controller = module.get<UsersController>(UsersController);
     randomEmail = await getRandomEmail();
-    console.log(randomEmail);
     bodyData = {
-      uuid: uuid,
+      uuid: uuid(),
       fname: 'user',
       lname: 'test',
       address: 'test',
