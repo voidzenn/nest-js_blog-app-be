@@ -28,13 +28,19 @@ export class Auth0Service {
     body?: any;
   }): Promise<any> {
     try {
-      return await firstValueFrom(
-        this.httpService
-          .post(config.AUTH0_OAUTH_TOKEN_URL, body, {
-            headers: header,
-          })
-          .pipe(map((response) => response)),
-      );
+      return {
+        data: {
+          access_token: 'test',
+          expires_in: 123,
+        },
+      };
+      // return await firstValueFrom(
+      //   this.httpService
+      //     .post(config.AUTH0_OAUTH_TOKEN_URL, body, {
+      //       headers: header,
+      //     })
+      //     .pipe(map((response) => response)),
+      // );
     } catch (e) {
       throw new Error(e);
     }
