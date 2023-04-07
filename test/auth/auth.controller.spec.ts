@@ -12,7 +12,8 @@ import { getRandomEmail } from '../../src/utils/randomizedData';
 
 describe('AuthController', () => {
   let controller: AuthController;
-  const randomEmail = getRandomEmail();
+  let randomUuid: string;
+  let randomEmail: string;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -22,6 +23,9 @@ describe('AuthController', () => {
     }).compile();
 
     controller = module.get<AuthController>(AuthController);
+
+    randomUuid = await uuid().then((res) => res);
+    randomEmail = randomEmail ?? (await getRandomEmail().then((res) => res));
   });
 
   it('should be defined', () => {
@@ -41,7 +45,7 @@ describe('AuthController', () => {
 
     it('should successfully signup or create user', async () => {
       const authSignupDto: AuthSignupDto = {
-        uuid: uuid(),
+        uuid: randomUuid,
         fname: 'fname',
         lname: 'lname',
         address: 'address',

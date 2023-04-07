@@ -16,7 +16,9 @@ describe('UsersController', () => {
   let app: INestApplication;
   let controller: UsersController;
   let bodyData: AuthSignupDto;
-  let signup;
+  let randomUuid: string;
+  let randomEmail: string;
+  let signedupEmail: string;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -31,19 +33,8 @@ describe('UsersController', () => {
 
     controller = module.get<UsersController>(UsersController);
 
-    bodyData = {
-      uuid: uuid(),
-      fname: 'user',
-      lname: 'test',
-      address: 'test',
-      email: getRandomEmail(),
-      password: 'test',
-    };
-
-    signup = await request(app.getHttpServer())
-      .post('/auth/signup')
-      .send(bodyData);
-    console.log(signup.body);
+    randomUuid = await uuid().then((res) => res);
+    randomEmail = await getRandomEmail().then((res) => res);
   });
 
   afterAll(async () => {
@@ -52,6 +43,29 @@ describe('UsersController', () => {
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
+  });
+
+  describe('should signup successfully', () => {
+    it('should return the right response when running signup function', async () => {
+      bodyData = {
+        uuid: randomUuid,
+        fname: 'user',
+        lname: 'test',
+        address: 'test',
+        email: randomEmail,
+        password: 'test',
+      };
+
+      expect(
+        await request(app.getHttpServer())
+          .post('/auth/signup')
+          .send(bodyData)
+          .then((response) => response.body),
+      ).toEqual({
+        email: expect.any(String),
+        createdAt: expect.any(String),
+      });
+    });
   });
 
   // it('sample', async () => {
@@ -67,9 +81,9 @@ describe('UsersController', () => {
   //   console.log(signup);
   // });
 
-  it('should be defined', async () => {
-    // const users = await request(app.getHttpServer()).get('/users');
-    // const response = await request(app.getHttpServer()).get('/users');
-    // console.log(response.status);
-  });
+  // it('should be defined', async () => {
+  // const users = await request(app.getHttpServer()).get('/users');
+  // const response = await request(app.getHttpServer()).get('/users');
+  // console.log(response.status);
+  // });
 });
