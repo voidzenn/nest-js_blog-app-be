@@ -7,7 +7,7 @@ import { getRandomEmail } from '../../src/utils/randomizedData';
 
 describe('AuthService', () => {
   let authService: AuthService;
-  let randomEmail: string;
+  const randomEmail = getRandomEmail();
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -15,7 +15,6 @@ describe('AuthService', () => {
     }).compile();
 
     authService = module.get<AuthService>(AuthService);
-    randomEmail = await getRandomEmail();
   });
 
   it('should define auth service', () => {
@@ -35,7 +34,7 @@ describe('AuthService', () => {
 
     it('should successfully signup or create user', async () => {
       const authSignupDto: AuthSignupDto = {
-        uuid: uuid,
+        uuid: uuid(),
         fname: 'fname',
         lname: 'lname',
         address: 'address',

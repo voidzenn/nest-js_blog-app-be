@@ -15,8 +15,8 @@ import { getRandomEmail } from '../../src/utils/randomizedData';
 describe('UsersController', () => {
   let app: INestApplication;
   let controller: UsersController;
-  let randomEmail: string;
   let bodyData: AuthSignupDto;
+  let signup;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -28,17 +28,19 @@ describe('UsersController', () => {
     app = module.createNestApplication();
     app.useGlobalPipes(new ValidationPipe());
     await app.init();
+
     controller = module.get<UsersController>(UsersController);
-    randomEmail = await getRandomEmail();
+
     bodyData = {
       uuid: uuid(),
       fname: 'user',
       lname: 'test',
       address: 'test',
-      email: randomEmail,
+      email: getRandomEmail(),
       password: 'test',
     };
-    const signup = await request(app.getHttpServer())
+
+    signup = await request(app.getHttpServer())
       .post('/auth/signup')
       .send(bodyData);
     console.log(signup.body);

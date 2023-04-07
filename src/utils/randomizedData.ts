@@ -1,7 +1,8 @@
 import { shortUuid } from './getUuid';
 
 const getRandomEmail = () => {
-  return `${shortUuid()}@user.com`;
+  const uuid = shortUuid();
+  return `${uuid}@user.com`;
 };
 
 export { getRandomEmail };
