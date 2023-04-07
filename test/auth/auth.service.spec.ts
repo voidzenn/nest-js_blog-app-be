@@ -1,8 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { uuid, shortUuid } from '../../src/utils/getUuid';
+import { uuid } from '../../src/utils/getUuid';
 import { PrismaService } from '../../src/prisma/prisma.service';
 import { AuthService } from '../../src/auth/auth.service';
 import { AuthSigninDto, AuthSignupDto } from '../../src/auth/dto';
+import { getRandomEmail } from '../../src/utils/randomizedData';
 
 describe('AuthService', () => {
   let authService: AuthService;
@@ -14,7 +15,7 @@ describe('AuthService', () => {
     }).compile();
 
     authService = module.get<AuthService>(AuthService);
-    randomEmail = `user@${shortUuid}.com`;
+    randomEmail = await getRandomEmail();
   });
 
   it('should define auth service', () => {

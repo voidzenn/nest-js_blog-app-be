@@ -3,13 +3,14 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UsersController } from '../../src/users/users.controller';
 import * as request from 'supertest';
 import { JwtStrategy } from '../../src/auth/strategy';
-import { shortUuid, uuid } from '../../src/utils/getUuid';
+import { uuid } from '../../src/utils/getUuid';
 import { AuthController } from '../../src/auth/auth.controller';
 import { AuthService } from '../../src/auth/auth.service';
 import { AuthModule } from '../../src/auth/auth.module';
 import { PrismaService } from '../../src/prisma/prisma.service';
 import { Auth0Module } from '../../src/auth0/auth0.module';
-import { AuthSignupDto } from 'src/auth/dto';
+import { AuthSignupDto } from '../../src/auth/dto';
+import { getRandomEmail } from '../../src/utils/randomizedData';
 
 describe('UsersController', () => {
   let app: INestApplication;
@@ -28,7 +29,8 @@ describe('UsersController', () => {
     app.useGlobalPipes(new ValidationPipe());
     await app.init();
     controller = module.get<UsersController>(UsersController);
-    randomEmail = await shortUuid;
+    randomEmail = await getRandomEmail();
+    console.log(randomEmail);
     bodyData = {
       uuid: uuid,
       fname: 'user',

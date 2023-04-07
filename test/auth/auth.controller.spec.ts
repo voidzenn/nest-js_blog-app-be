@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { shortUuid, uuid } from '../../src/utils/getUuid';
+import { uuid } from '../../src/utils/getUuid';
 import { PrismaService } from '../../src/prisma/prisma.service';
 import { AuthController } from '../../src/auth/auth.controller';
 import { AuthService } from '../../src/auth/auth.service';
@@ -8,10 +8,11 @@ import { validate } from 'class-validator';
 import { Auth0Controller } from '../../src/auth0/auth0.controller';
 import { Auth0Service } from '../../src/auth0/auth0.service';
 import { Auth0Module } from '../../src/auth0/auth0.module';
+import { getRandomEmail } from '../../src/utils/randomizedData';
 
 describe('AuthController', () => {
   let controller: AuthController;
-  let randomEmail: string;
+  let randomEmail;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -21,7 +22,7 @@ describe('AuthController', () => {
     }).compile();
 
     controller = module.get<AuthController>(AuthController);
-    randomEmail = `user@${shortUuid}.com`;
+    randomEmail = await getRandomEmail();
   });
 
   it('should be defined', () => {
