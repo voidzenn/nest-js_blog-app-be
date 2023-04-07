@@ -9,16 +9,16 @@ import { AuthService } from '../../src/auth/auth.service';
 import { AuthModule } from '../../src/auth/auth.module';
 import { PrismaService } from '../../src/prisma/prisma.service';
 import { Auth0Module } from '../../src/auth0/auth0.module';
-import { AuthSignupDto } from '../../src/auth/dto';
+import { AuthSigninDto, AuthSignupDto } from '../../src/auth/dto';
 import { getRandomEmail } from '../../src/utils/randomizedData';
 
 describe('UsersController', () => {
   let app: INestApplication;
   let controller: UsersController;
-  let bodyData: AuthSignupDto;
+  let signupDto: AuthSignupDto;
+  let signinDto: AuthSigninDto;
   let randomUuid: string;
   let randomEmail: string;
-  let signedupEmail: string;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -34,7 +34,7 @@ describe('UsersController', () => {
     controller = module.get<UsersController>(UsersController);
 
     randomUuid = await uuid().then((res) => res);
-    randomEmail = await getRandomEmail().then((res) => res);
+    randomEmail = randomEmail ?? (await getRandomEmail().then((res) => res));
   });
 
   afterAll(async () => {
@@ -45,9 +45,9 @@ describe('UsersController', () => {
     expect(controller).toBeDefined();
   });
 
-  describe('should signup successfully', () => {
-    it('should return the right response when running signup function', async () => {
-      bodyData = {
+  describe('should signup and signin successfully', () => {
+    it('should return the right response when running signup function succesffully', async () => {
+      signupDto = {
         uuid: randomUuid,
         fname: 'user',
         lname: 'test',
@@ -59,31 +59,34 @@ describe('UsersController', () => {
       expect(
         await request(app.getHttpServer())
           .post('/auth/signup')
-          .send(bodyData)
+          .send(signupDto)
           .then((response) => response.body),
       ).toEqual({
         email: expect.any(String),
         createdAt: expect.any(String),
       });
     });
+
+    it('should return the right response when running signin function succesffully', async () => {
+      signinDto = {
+        email: randomEmail,
+        password: 'test',
+      };
+
+      expect(
+        await request(app.getHttpServer())
+          .post('/auth/signin')
+          .send(signinDto)
+          .then((response) => response.body),
+      ).toEqual({
+        userUuid: expect.any(String),
+        status: 200,
+        message: expect.any(String),
+        data: {
+          access_token: expect.any(String),
+          expires_in: expect.any(Number),
+        },
+      });
+    });
   });
-
-  // it('sample', async () => {
-  //   const signup = await request(app.getHttpServer())
-  //     .post('/auth/signup')
-  //     .set('Content-Type', 'application/json')
-  //     .then((response) => {
-  //       return response.body;
-  //     })
-  //     .catch((e) => {
-  //       return e.body;
-  //     });
-  //   console.log(signup);
-  // });
-
-  // it('should be defined', async () => {
-  // const users = await request(app.getHttpServer()).get('/users');
-  // const response = await request(app.getHttpServer()).get('/users');
-  // console.log(response.status);
-  // });
 });
