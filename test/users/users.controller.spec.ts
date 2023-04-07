@@ -11,14 +11,24 @@ import { PrismaService } from '../../src/prisma/prisma.service';
 import { Auth0Module } from '../../src/auth0/auth0.module';
 import { AuthSigninDto, AuthSignupDto } from '../../src/auth/dto';
 import { getRandomEmail } from '../../src/utils/randomizedData';
+import { Auth0Controller } from '../../src/auth0/auth0.controller';
+import { Auth0Service } from '../../src/auth0/auth0.service';
 
 describe('UsersController', () => {
   let app: INestApplication;
   let controller: UsersController;
+  let auth0Controller: Auth0Controller;
+  let auth0Service: Auth0Service;
   let signupDto: AuthSignupDto;
   let signinDto: AuthSigninDto;
   let randomUuid: string;
   let randomEmail: string;
+  const returnedGetAuth0TokenData = {
+    data: {
+      access_token: 'test',
+      expires_in: 123,
+    },
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -32,6 +42,8 @@ describe('UsersController', () => {
     await app.init();
 
     controller = module.get<UsersController>(UsersController);
+    auth0Controller = module.get<Auth0Controller>(Auth0Controller);
+    auth0Service = module.get<Auth0Service>(Auth0Service);
 
     randomUuid = await uuid().then((res) => res);
     randomEmail = randomEmail ?? (await getRandomEmail().then((res) => res));
@@ -56,6 +68,10 @@ describe('UsersController', () => {
         password: 'test',
       };
 
+      jest
+        .spyOn(auth0Controller, 'getAccessToken')
+        .mockResolvedValue(returnedGetAuth0TokenData);
+
       expect(
         await request(app.getHttpServer())
           .post('/auth/signup')
@@ -73,12 +89,20 @@ describe('UsersController', () => {
         password: 'test',
       };
 
+      jest
+        .spyOn(auth0Service, 'getAuth0Token')
+        .mockResolvedValue(returnedGetAuth0TokenData);
+
+      jest
+        .spyOn(auth0Controller, 'getAccessToken')
+        .mockResolvedValue(returnedGetAuth0TokenData);
+
       expect(
         await request(app.getHttpServer())
           .post('/auth/signin')
           .send(signinDto)
           .then((response) => response.body),
-      ).toEqual({
+      ).toMatchObject({
         userUuid: expect.any(String),
         status: 200,
         message: expect.any(String),

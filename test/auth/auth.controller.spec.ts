@@ -14,6 +14,14 @@ describe('AuthController', () => {
   let controller: AuthController;
   let randomUuid: string;
   let randomEmail: string;
+  let auth0Controller: Auth0Controller;
+  let auth0Service: Auth0Service;
+  const returnedGetAuth0TokenData = {
+    data: {
+      access_token: 'test',
+      expires_in: 123,
+    },
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -23,6 +31,8 @@ describe('AuthController', () => {
     }).compile();
 
     controller = module.get<AuthController>(AuthController);
+    auth0Controller = module.get<Auth0Controller>(Auth0Controller);
+    auth0Service = module.get<Auth0Service>(Auth0Service);
 
     randomUuid = await uuid().then((res) => res);
     randomEmail = randomEmail ?? (await getRandomEmail().then((res) => res));
@@ -115,9 +125,19 @@ describe('AuthController', () => {
         password: 'test',
       };
 
+      jest
+        .spyOn(auth0Service, 'getAuth0Token')
+        .mockResolvedValue(returnedGetAuth0TokenData);
+
+      jest
+        .spyOn(auth0Controller, 'getAccessToken')
+        .mockResolvedValue(returnedGetAuth0TokenData);
+
       expect(
         await controller.signIn(authSigninDto).then((response) => response),
       ).toMatchObject({
+        userUuid: expect.any(String),
+        message: expect.any(String),
         status: 200,
         data: {
           access_token: expect.any(String),

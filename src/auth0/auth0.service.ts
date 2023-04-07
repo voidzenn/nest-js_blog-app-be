@@ -42,7 +42,7 @@ export class Auth0Service {
       //     .pipe(map((response) => response)),
       // );
     } catch (e) {
-      throw new Error(e);
+      throw e;
     }
   }
 }
