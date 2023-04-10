@@ -2,7 +2,7 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UsersController } from '../../src/users/users.controller';
 import * as request from 'supertest';
-import { JwtStrategy } from '../../src/auth/strategy';
+import { JwtStrategy } from '../../src/auth_guard/strategy';
 import { uuid } from '../../src/utils/getUuid';
 import { AuthController } from '../../src/auth/auth.controller';
 import { AuthService } from '../../src/auth/auth.service';
