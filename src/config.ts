@@ -1,3 +1,7 @@
+import * as dotenv from 'dotenv';
+
+dotenv.config();
+
 export default {
   AUTH0_ISSUER_URL: process.env.AUTH0_ISSUER_URL,
   AUTH0_OAUTH_TOKEN_URL: process.env.AUTH0_OAUTH_TOKEN_URL,
