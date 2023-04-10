@@ -1,11 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { uuid, shortUuid } from '../utils/getUuid';
-import { PrismaService } from '../prisma/prisma.service';
-import { AuthService } from './auth.service';
-import { AuthSigninDto, AuthSignupDto } from './dto';
+import { uuid } from '../../src/utils/getUuid';
+import { PrismaService } from '../../src/prisma/prisma.service';
+import { AuthService } from '../../src/auth/auth.service';
+import { AuthSigninDto, AuthSignupDto } from '../../src/auth/dto';
+import { getRandomEmail } from '../../src/utils/randomizedData';
 
 describe('AuthService', () => {
   let authService: AuthService;
+  let randomUuid: string;
   let randomEmail: string;
 
   beforeEach(async () => {
@@ -14,7 +16,9 @@ describe('AuthService', () => {
     }).compile();
 
     authService = module.get<AuthService>(AuthService);
-    randomEmail = `user@${shortUuid}.com`;
+
+    randomUuid = await uuid().then((res) => res);
+    randomEmail = randomEmail ?? (await getRandomEmail().then((res) => res));
   });
 
   it('should define auth service', () => {
@@ -34,7 +38,7 @@ describe('AuthService', () => {
 
     it('should successfully signup or create user', async () => {
       const authSignupDto: AuthSignupDto = {
-        uuid: uuid,
+        uuid: randomUuid,
         fname: 'fname',
         lname: 'lname',
         address: 'address',
@@ -46,7 +50,6 @@ describe('AuthService', () => {
         expect(
           await authService.signUp(authSignupDto).then((response) => response),
         ).toEqual({
-          id: expect.any(Number),
           email: expect.any(String),
           createdAt: expect.any(Date),
         });

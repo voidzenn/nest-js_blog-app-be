@@ -1,17 +1,27 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { shortUuid, uuid } from '../utils/getUuid';
-import { PrismaService } from '../prisma/prisma.service';
-import { AuthController } from './auth.controller';
-import { AuthService } from './auth.service';
-import { AuthSigninDto, AuthSignupDto } from './dto';
+import { uuid } from '../../src/utils/getUuid';
+import { PrismaService } from '../../src/prisma/prisma.service';
+import { AuthController } from '../../src/auth/auth.controller';
+import { AuthService } from '../../src/auth/auth.service';
+import { AuthSigninDto, AuthSignupDto } from '../../src/auth/dto';
 import { validate } from 'class-validator';
-import { Auth0Controller } from '../auth0/auth0.controller';
-import { Auth0Service } from '../auth0/auth0.service';
-import { Auth0Module } from '../auth0/auth0.module';
+import { Auth0Controller } from '../../src/auth0/auth0.controller';
+import { Auth0Service } from '../../src/auth0/auth0.service';
+import { Auth0Module } from '../../src/auth0/auth0.module';
+import { getRandomEmail } from '../../src/utils/randomizedData';
 
 describe('AuthController', () => {
   let controller: AuthController;
+  let randomUuid: string;
   let randomEmail: string;
+  let auth0Controller: Auth0Controller;
+  let auth0Service: Auth0Service;
+  const returnedGetAuth0TokenData = {
+    data: {
+      access_token: 'test',
+      expires_in: 123,
+    },
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -21,7 +31,11 @@ describe('AuthController', () => {
     }).compile();
 
     controller = module.get<AuthController>(AuthController);
-    randomEmail = `user@${shortUuid}.com`;
+    auth0Controller = module.get<Auth0Controller>(Auth0Controller);
+    auth0Service = module.get<Auth0Service>(Auth0Service);
+
+    randomUuid = await uuid().then((res) => res);
+    randomEmail = randomEmail ?? (await getRandomEmail().then((res) => res));
   });
 
   it('should be defined', () => {
@@ -41,7 +55,7 @@ describe('AuthController', () => {
 
     it('should successfully signup or create user', async () => {
       const authSignupDto: AuthSignupDto = {
-        uuid: uuid,
+        uuid: randomUuid,
         fname: 'fname',
         lname: 'lname',
         address: 'address',
@@ -53,7 +67,6 @@ describe('AuthController', () => {
         expect(
           await controller.signUp(authSignupDto).then((response) => response),
         ).toEqual({
-          id: expect.any(Number),
           email: expect.any(String),
           createdAt: expect.any(Date),
         });
@@ -112,9 +125,19 @@ describe('AuthController', () => {
         password: 'test',
       };
 
+      jest
+        .spyOn(auth0Service, 'getAuth0Token')
+        .mockResolvedValue(returnedGetAuth0TokenData);
+
+      jest
+        .spyOn(auth0Controller, 'getAccessToken')
+        .mockResolvedValue(returnedGetAuth0TokenData);
+
       expect(
         await controller.signIn(authSigninDto).then((response) => response),
       ).toMatchObject({
+        userUuid: expect.any(String),
+        message: expect.any(String),
         status: 200,
         data: {
           access_token: expect.any(String),

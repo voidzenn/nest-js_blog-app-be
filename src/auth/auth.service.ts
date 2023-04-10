@@ -10,7 +10,12 @@ import { AuthSigninDto, AuthSignupDto } from './dto';
 import { responseStatus } from '../constants/responses/response.status';
 import { AuthResponse } from './types/response.types';
 
-const authRespponse: AuthResponse = { status: null, message: null, data: {} };
+const authRespponse: AuthResponse = {
+  userUuid: null,
+  status: null,
+  message: null,
+  data: {},
+};
 
 @Injectable()
 export class AuthService {
@@ -24,7 +29,6 @@ export class AuthService {
     return await this.prisma.user
       .create({
         select: {
-          id: true,
           email: true,
           createdAt: true,
         },
@@ -45,6 +49,7 @@ export class AuthService {
         email: authSiginDto.email,
       },
       select: {
+        uuid: true,
         password: true,
       },
     });
@@ -57,6 +62,7 @@ export class AuthService {
         if (!response)
           throw new ForbiddenException(signinError.WRONG_EMAIL_PASSWORD);
 
+        authRespponse.userUuid = user.uuid;
         authRespponse.status = responseStatus.SUCCESS_SIGNIN.status;
         authRespponse.message = responseStatus.SUCCESS_SIGNIN.message;
 

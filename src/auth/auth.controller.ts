@@ -43,21 +43,12 @@ export class AuthController {
     return await this.authService
       .signIn(authSigninDto)
       .then(async (response) => {
-        const data = await this.getAuth0Data();
-        if (data) {
-          response.data = data;
-          return response;
-        }
+        const data = await this.auth0Controller.getAccessToken({});
+        response.data = data.data;
+        return response;
       })
       .catch((e) => {
         throw e;
       });
-  }
-
-  private async getAuth0Data() {
-    return await this.auth0Controller
-      .getAccessToken({})
-      .then((response) => response)
-      .catch((e) => e);
   }
 }

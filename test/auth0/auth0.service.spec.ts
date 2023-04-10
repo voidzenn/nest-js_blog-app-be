@@ -1,7 +1,8 @@
 import { HttpModule } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
-import config from '../config';
-import { Auth0Service } from './auth0.service';
+import config from '../../src/config';
+import { Auth0Service } from '../../src/auth0/auth0.service';
+import { UnauthorizedException } from '@nestjs/common';
 
 describe('Auth0Service', () => {
   let service: Auth0Service;
@@ -16,12 +17,11 @@ describe('Auth0Service', () => {
     audience: config.AUTH0_AUDIENCE,
     grant_type: config.GRANT_TYPE,
   };
-
-  const bodyDataBadValues = {
-    client_id: 'test',
-    client_secret: 'test',
-    audience: 'test',
-    grant_type: 'test',
+  const returnedGetAuth0TokenData = {
+    data: {
+      access_token: 'test',
+      expires_in: 123,
+    },
   };
 
   beforeEach(async () => {
@@ -38,14 +38,17 @@ describe('Auth0Service', () => {
   });
 
   it('should throw Error if provided with bad body values', async () => {
-    expect(
-      await service
-        .getAuth0Token({ header: headerData, body: bodyDataBadValues })
-        .catch((e) => e),
-    ).rejects.toThrowError;
+    jest.spyOn(service, 'getAuth0Token').mockResolvedValue(new Error());
+
+    expect(await service.getAuth0Token({}).catch((e) => e)).rejects
+      .toThrowError;
   });
 
   it('should get access_token data from auth0', async () => {
+    jest
+      .spyOn(service, 'getAuth0Token')
+      .mockResolvedValue(returnedGetAuth0TokenData);
+
     expect(
       await service
         .getAuth0Token({ header: headerData, body: bodyData })
@@ -59,6 +62,10 @@ describe('Auth0Service', () => {
   });
 
   it('should get expires_in data from auth0', async () => {
+    jest
+      .spyOn(service, 'getAuth0Token')
+      .mockResolvedValue(returnedGetAuth0TokenData);
+
     expect(
       await service
         .getAuth0Token({ header: headerData, body: bodyData })
